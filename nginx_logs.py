@@ -52,7 +52,8 @@ suspicious_patterns = [
 
 # List of allowed patterns
 allowed_patterns = [
-    r'/static/styles/', r'/static/scripts/', r'/static/favicon.ico', r'/keyexchange', r'/secretprocessing', r'/login'
+    r'/static/styles/', r'/static/scripts/', r'/static/favicon.ico', r'/keyexchange', r'/secretprocessing', r'/login',
+    r'/logout', r'/upload_csv'
 ]
 
 # Function to parse the log file and identify suspicious activities
@@ -123,7 +124,7 @@ def generate_report(suspicious_activity):
 def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout=3600, verbose=False):
     # Check if the ipset already exists
     result = subprocess.run(f"sudo ipset list {ipset_name}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode == 1:
+    if result.returncode != 0:
         # Create the ipset if it doesn't exist
         subprocess.run(f"sudo ipset create {ipset_name} hash:ip timeout {timeout}", shell=True, check=True)
         if verbose:
