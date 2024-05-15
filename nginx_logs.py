@@ -53,7 +53,9 @@ suspicious_patterns = [
 # List of allowed patterns
 allowed_patterns = [
     r'/static/styles/', r'/static/scripts/', r'/static/favicon.ico', r'/keyexchange', r'/secretprocessing', r'/login',
-    r'/logout', r'/upload_csv'
+    r'/logout', r'/upload_csv', r'/dashboard', r'/add_password', r'retrieve_passwords', '/delete_password',
+    r'delete_multiple_passwords', r'/edit_password', r'/decrypt_password', r'/backup', r'get_user_edek_iv',
+    r'/send_dek', r'/authenticate', r'/change_user_password', r'/signup', r'/login2fa'
 ]
 
 # Function to parse the log file and identify suspicious activities
