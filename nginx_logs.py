@@ -16,7 +16,7 @@ allowed_patterns = [
     r'/static/styles/', r'/static/scripts/', r'/static/favicon', r'/login', r'/logout', r'/upload_csv',
     r'/edit_password', r'/add_password', r"/static/hill_logo_blk_vig", r"/authenticate",
     r"/keyexchange", r"/secretprocessing", r"/dashboard", r"/get_user_edek_iv", r"/retrieve_passwords",
-    r"/backup", r'/notifications/hub?access_token'
+    r"/backup", r'/notifications/hub\?access_token'
 ]
 
 # Function to parse the log file and identify suspicious activities
