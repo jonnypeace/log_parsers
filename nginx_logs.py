@@ -113,7 +113,7 @@ def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout
             home_ip = home_ip_command.stdout.decode()
             home_ip = home_ip.split(' ')[3]
             if verbose:
-                print(f'Home IP {home_ip} found, we should be skipping this one')
+                print(f'Home IP {home_ip[:-1]} found. We should be skipping this one')
         else:
             home_ip = ''
             if verbose:
@@ -122,6 +122,7 @@ def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout
     ips_added = 0
     for ip in suspicious_activity.keys():
         if ip in existing_ips or ip in home_ip:
+            print(f'ip exists or home ip {ip}')
             continue
         subprocess.run(f"sudo ipset add {ipset_name} {ip} timeout {timeout}", shell=True, check=True)
         ips_added += 1
@@ -172,7 +173,7 @@ def main():
         report_access = generate_report(suspicious_activity_access)
         if verbose:
             print(report_access)
-        run_ipset_commands(suspicious_activity_access, verbose=verbose, dynamic_dns=args.dyndns)
+        run_ipset_commands(suspicious_activity_access, verbose=verbose, dynamic_dns=args.dyndns[0])
 
         # Parse error log
         error_log_file = '/var/log/nginx/error.log'  # Replace with the path to your error log file
