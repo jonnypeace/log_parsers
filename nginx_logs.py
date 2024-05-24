@@ -86,7 +86,7 @@ def generate_report(suspicious_activity):
     return "\n".join(report_lines)
 
 # Function to run ipset commands to block suspicious IPs with timeout
-def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout=3600, verbose=False):
+def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout=3600, verbose=False, dynamic_dns=None):
     # Check if the ipset already exists
     result = subprocess.run(f"sudo ipset list {ipset_name}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     iptables_result = subprocess.run(f"sudo iptables -vL | grep {ipset_name}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -107,10 +107,21 @@ def run_ipset_commands(suspicious_activity, ipset_name="suspicious_ips", timeout
             print(f"IPSet '{ipset_name}' already exists in iptables")
 
 
+    if dynamic_dns:
+        home_ip_command = subprocess.run(f"host {dynamic_dns}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if home_ip_command.returncode == 0:
+            home_ip = home_ip_command.stdout.decode()
+            home_ip = home_ip.split(' ')[3]
+            if verbose:
+                print(f'Home IP {home_ip} found, we should be skipping this one')
+        else:
+            home_ip = ''
+            if verbose:
+                print('Home IP not found')
 
     ips_added = 0
     for ip in suspicious_activity.keys():
-        if ip in existing_ips:
+        if ip in existing_ips or ip in home_ip:
             continue
         subprocess.run(f"sudo ipset add {ipset_name} {ip} timeout {timeout}", shell=True, check=True)
         ips_added += 1
@@ -147,6 +158,7 @@ def main():
     parser = argparse.ArgumentParser(description="Parse Nginx logs and manage IPSet.")
     parser.add_argument('--verbose', '-v', action='store_true', help="Enable verbose output")
     parser.add_argument('--delete', '-d', nargs='*', help="Delete specified IPs from IPSet")
+    parser.add_argument('--dyndns', '-D', nargs='*', help="Supply a dynamic DNS lookup to avoid locking out of server")
     args = parser.parse_args()
     
     verbose = args.verbose
