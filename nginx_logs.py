@@ -172,7 +172,7 @@ def main():
         report_access = generate_report(suspicious_activity_access)
         if verbose:
             print(report_access)
-        run_ipset_commands(suspicious_activity_access, verbose=verbose)
+        run_ipset_commands(suspicious_activity_access, verbose=verbose, dynamic_dns=args.dyndns)
 
         # Parse error log
         error_log_file = '/var/log/nginx/error.log'  # Replace with the path to your error log file
